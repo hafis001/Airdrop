@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Airdrop</title>
+    <title>All Posts</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -14,32 +14,45 @@
     </div>
 
     <script>
-        const posts = JSON.parse(localStorage.getItem('posts')) || [];
+        // Placeholder for where you'd fetch posts from a server
+        async function fetchPosts() {
+            // Implement fetching posts from server or JSON file here
+            return [];
+        }
+
+        const posts = []; // Replace with fetched posts
         const postContainer = document.getElementById('postContainer');
 
-        if (posts.length === 0) {
-            postContainer.innerHTML = '<p>No posts available. Please submit a post!</p>';
-        } else {
-            posts.forEach(post => {
-                const postDiv = document.createElement('div');
-                postDiv.classList.add('post-card');
+        async function loadPosts() {
+            const fetchedPosts = await fetchPosts();
+            posts.push(...fetchedPosts);
 
-                postDiv.innerHTML = `
-                    <div class="post-image">
-                        <img src="${post.logo}" alt="${post.name}" class="logo">
-                    </div>
-                    <div class="post-details">
-                        <h2>${post.name}</h2>
-                        <p>${post.description}</p>
-                        <p><strong>Start Date:</strong> ${post.startDate}</p>
-                    </div>
-                    <div class="post-link">
-                        <a href="${post.link}" class="button">Join Airdrop</a>
-                    </div>
-                `;
-                postContainer.appendChild(postDiv);
-            });
+            if (posts.length === 0) {
+                postContainer.innerHTML = '<p>No posts available. Please submit a post!</p>';
+            } else {
+                posts.forEach(post => {
+                    const postDiv = document.createElement('div');
+                    postDiv.classList.add('post-card');
+
+                    postDiv.innerHTML = `
+                        <div class="post-image">
+                            <img src="${post.logo}" alt="${post.name}" class="logo">
+                        </div>
+                        <div class="post-details">
+                            <h2>${post.name}</h2>
+                            <p>${post.description}</p>
+                            <p><strong>Start Date:</strong> ${post.startDate}</p>
+                        </div>
+                        <div class="post-link">
+                            <a href="${post.link}" class="button">Join Airdrop</a>
+                        </div>
+                    `;
+                    postContainer.appendChild(postDiv);
+                });
+            }
         }
+
+        loadPosts();
     </script>
 </body>
 </html>
