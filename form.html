@@ -38,7 +38,13 @@
     </div>
 
     <script>
-        const posts = JSON.parse(localStorage.getItem('posts')) || [];
+        // Placeholder for where you'd fetch and display posts from a server
+        async function fetchPosts() {
+            // Implement fetching posts from server or JSON file here
+            return [];
+        }
+
+        const posts = []; // Replace with fetched posts
 
         document.getElementById('postForm').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -50,11 +56,13 @@
                 endDate: document.getElementById('endDate').value,
                 link: document.getElementById('link').value
             };
-            posts.unshift(newPost);
-            localStorage.setItem('posts', JSON.stringify(posts));
+
+            // Here you would send the newPost to your server or save it to a file
+            // After saving, you might want to update the existing posts displayed
+            posts.push(newPost);
+            displayExistingPosts();
             this.reset();
             showSuccessMessage();
-            displayExistingPosts();
         });
 
         function showSuccessMessage() {
@@ -69,7 +77,7 @@
             const existingPostsContainer = document.getElementById('existingPosts');
             existingPostsContainer.innerHTML = '';
 
-            posts.forEach((post, index) => {
+            posts.forEach(post => {
                 const postDiv = document.createElement('div');
                 postDiv.classList.add('post-card');
                 postDiv.innerHTML = `
@@ -78,36 +86,17 @@
                     <p>${post.description}</p>
                     <p><strong>Start Date:</strong> ${post.startDate}</p>
                     <p><strong>End Date:</strong> ${post.endDate}</p>
-                    <a href="${post.link}" class="button">View Link</a>
-                    <button class="edit-button" data-index="${index}">Edit</button>
+                    <button class="edit-button">Edit</button>
                 `;
                 existingPostsContainer.appendChild(postDiv);
             });
         }
 
-        document.getElementById('existingPosts').addEventListener('click', function(event) {
-            if (event.target.classList.contains('edit-button')) {
-                const index = event.target.dataset.index;
-                loadPostForEditing(index);
-            }
-        });
-
-        function loadPostForEditing(index) {
-            const post = posts[index];
-            document.getElementById('logo').value = post.logo;
-            document.getElementById('name').value = post.name;
-            document.getElementById('description').value = post.description;
-            document.getElementById('startDate').value = post.startDate;
-            document.getElementById('endDate').value = post.endDate;
-            document.getElementById('link').value = post.link;
-
-            // Remove the selected post for update
-            posts.splice(index, 1);
-            localStorage.setItem('posts', JSON.stringify(posts));
+        fetchPosts().then(fetchedPosts => {
+            // Use fetched posts to update the local posts array
+            posts.push(...fetchedPosts);
             displayExistingPosts();
-        }
-
-        displayExistingPosts();
+        });
     </script>
 </body>
 </html>
