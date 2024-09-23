@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Post</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Submit Your Post</h1>
+        <form id="postForm">
+            <label for="logo">Logo URL:</label>
+            <input type="text" id="logo" placeholder="Enter logo URL" required>
+
+            <label for="name">Name:</label>
+            <input type="text" id="name" placeholder="Enter post name" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" placeholder="Enter post description" required></textarea>
+
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate" required>
+
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate" required>
+
+            <label for="link">Link:</label>
+            <input type="url" id="link" placeholder="Enter link" required>
+
+            <button type="submit">Submit Post</button>
+        </form>
+        <div id="successMessage" class="hidden">Post submitted successfully!</div>
+
+        <h2>Existing Posts</h2>
+        <div id="existingPosts"></div>
+        <p><a href="display.html">View All Posts</a></p>
+    </div>
+
+    <script>
+        const posts = JSON.parse(localStorage.getItem('posts')) || [];
+
+        document.getElementById('postForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const newPost = {
+                logo: document.getElementById('logo').value,
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                link: document.getElementById('link').value
+            };
+            posts.unshift(newPost);
+            localStorage.setItem('posts', JSON.stringify(posts));
+            this.reset();
+            showSuccessMessage();
+            displayExistingPosts();
+        });
+
+        function showSuccessMessage() {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.remove('hidden');
+            setTimeout(() => {
+                successMessage.classList.add('hidden');
+            }, 3000);
+        }
+
+        function displayExistingPosts() {
+            const existingPostsContainer = document.getElementById('existingPosts');
+            existingPostsContainer.innerHTML = '';
+
+            posts.forEach((post, index) => {
+                const postDiv = document.createElement('div');
+                postDiv.classList.add('post-card');
+                postDiv.innerHTML = `
+                    <img src="${post.logo}" alt="${post.name}" class="logo">
+                    <h2>${post.name}</h2>
+                    <p>${post.description}</p>
+                    <p><strong>Start Date:</strong> ${post.startDate}</p>
+                    <p><strong>End Date:</strong> ${post.endDate}</p>
+                    <a href="${post.link}" class="button">View Link</a>
+                    <button class="edit-button" data-index="${index}">Edit</button>
+                `;
+                existingPostsContainer.appendChild(postDiv);
+            });
+        }
+
+        document.getElementById('existingPosts').addEventListener('click', function(event) {
+            if (event.target.classList.contains('edit-button')) {
+                const index = event.target.dataset.index;
+                loadPostForEditing(index);
+            }
+        });
+
+        function loadPostForEditing(index) {
+            const post = posts[index];
+            document.getElementById('logo').value = post.logo;
+            document.getElementById('name').value = post.name;
+            document.getElementById('description').value = post.description;
+            document.getElementById('startDate').value = post.startDate;
+            document.getElementById('endDate').value = post.endDate;
+            document.getElementById('link').value = post.link;
+
+            // Remove the selected post for update
+            posts.splice(index, 1);
+            localStorage.setItem('posts', JSON.stringify(posts));
+            displayExistingPosts();
+        }
+
+        displayExistingPosts();
+    </script>
+</body>
+</html>
